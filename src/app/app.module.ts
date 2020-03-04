@@ -4,6 +4,7 @@ import { NgModule } from '@angular/core';
 import { AppComponent } from './app.component';
 import {MyGalleryModule} from './gallery/my-gallery.module';
 import {CommonModule} from '@angular/common';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({
   declarations: [
@@ -12,7 +13,8 @@ import {CommonModule} from '@angular/common';
   imports: [
     BrowserModule,
     CommonModule,
-    MyGalleryModule
+    MyGalleryModule,
+    BrowserAnimationsModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
