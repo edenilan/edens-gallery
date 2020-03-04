@@ -1,0 +1,13 @@
+:host{
+  display: flex;
+
+}
+
+.gallery-image-container{
+  flex: 1;
+  margin: 2px;
+}
+.gallery-image-container img {
+  height: 100%;
+  width: 100%;
+}

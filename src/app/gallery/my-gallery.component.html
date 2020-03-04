@@ -1,3 +1,4 @@
-<div *ngFor="let image of currentVisibleImages$ | async">
+<div *ngFor="let image of currentVisibleImages$ | async"
+     class="gallery-image-container">
   <img [src]=image.url alt="">
 </div>
