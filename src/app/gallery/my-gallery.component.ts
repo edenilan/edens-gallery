@@ -23,8 +23,8 @@ function extractPageFromResults(pageNumber: number, pageSize: number, results: I
 export class MyGalleryComponent implements OnInit {
   @Input() private readonly feed: string | Image[];
   @Input() private readonly resultsPerPage = 10;
+  public currentVisibleImages$: Observable<Image[]>;
   private images$: Observable<Image[]>;
-  private currentVisibleImages$: Observable<Image[]>;
   private currentPageNumber = 1;
   constructor(private httpClient: HttpClient) {
   }
