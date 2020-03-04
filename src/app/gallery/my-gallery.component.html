@@ -2,3 +2,10 @@
      class="gallery-image-container">
   <img [src]=image.url alt="" onerror="this.onerror=null;this.src='../../assets/placeholder.png'">
 </div>
+
+<mat-paginator *ngIf="pagination"
+               [length]="(images$|async).length"
+               [pageSizeOptions]="pageSizeOptions"
+               [pageSize]="resultsPerPage"
+               (page)="onPageEvent($event)">
+</mat-paginator>

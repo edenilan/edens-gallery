@@ -1,16 +1,23 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {Observable, of} from 'rxjs';
+import {combineLatest, Observable, of, Subject} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
-import {map} from 'rxjs/operators';
+import {map, startWith} from 'rxjs/operators';
+import {PageEvent} from '@angular/material/paginator';
 
 export interface Image {
   title: string;
   url: string;
   date: string;
 }
+export type PageSize = 5 | 10 | 15 | 20;
+const PAGE_SIZE_OPTIONS: PageSize[] = [5, 10, 15, 20];
+interface Paging {
+  pageIndex: number;
+  pageSize: number;
+}
 
-function extractPageFromResults(pageNumber: number, pageSize: number, results: Image[]){
-  const start = (pageNumber - 1) * pageSize;
+function extractPageFromResults(pageIndex: number, pageSize: number, results: Image[]){
+  const start = (pageIndex) * pageSize;
   const end = start + pageSize;
   return results.slice(start, end);
 }
@@ -21,11 +28,19 @@ function extractPageFromResults(pageNumber: number, pageSize: number, results: I
   styleUrls: ['./my-gallery.component.css']
 })
 export class MyGalleryComponent implements OnInit {
+  @Input() public readonly pagination: boolean = true;
+  @Input() public readonly resultsPerPage: PageSize = 10;
   @Input() private readonly feed: string | Image[];
-  @Input() private readonly resultsPerPage = 10;
+  public images$: Observable<Image[]>;
   public currentVisibleImages$: Observable<Image[]>;
-  private images$: Observable<Image[]>;
-  private currentPageNumber = 1;
+  public pageSizeOptions: number[] = PAGE_SIZE_OPTIONS;
+  private pagingSubject = new Subject<Paging>();
+  private paging$: Observable<Paging> = this.pagingSubject.asObservable().pipe(
+    startWith({
+      pageIndex: 0,
+      pageSize: this.resultsPerPage,
+    })
+  );
   constructor(private httpClient: HttpClient) {
   }
   ngOnInit(): void {
@@ -37,12 +52,13 @@ export class MyGalleryComponent implements OnInit {
     } else {
       this.images$ = of(this.feed);
     }
-    this.currentVisibleImages$ = this.images$.pipe(
-      map((allImages) =>
-        extractPageFromResults(this.currentPageNumber, this.resultsPerPage, allImages)
+    this.currentVisibleImages$ = combineLatest([this.images$, this.paging$]).pipe(
+      map(([allImages, paging]) =>
+        extractPageFromResults(paging.pageIndex, paging.pageSize, allImages)
       )
     );
   }
-
-
+  public onPageEvent(pageEvent: PageEvent){
+    this.pagingSubject.next(pageEvent);
+  }
 }
