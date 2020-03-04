@@ -1,11 +1,12 @@
 :host{
   display: flex;
-
+  align-items: center;
 }
 
 .gallery-image-container{
   flex: 1;
   margin: 2px;
+  height: 100%;
 }
 .gallery-image-container img {
   height: 100%;

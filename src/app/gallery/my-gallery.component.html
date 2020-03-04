@@ -1,4 +1,4 @@
 <div *ngFor="let image of currentVisibleImages$ | async"
      class="gallery-image-container">
-  <img [src]=image.url alt="">
+  <img [src]=image.url alt="" onerror="this.onerror=null;this.src='../../assets/placeholder.png'">
 </div>
