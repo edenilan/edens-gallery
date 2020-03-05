@@ -1,5 +1,5 @@
-<div class="sort-dropdown-wrapper">
-  <mat-form-field class="sorting"
+<div class="gallery-header">
+  <mat-form-field class="gallery-header-item"
                   *ngIf="sorting">
     <mat-label>Sort by...</mat-label>
     <mat-select>
@@ -9,6 +9,10 @@
         {{sortingOption.displayValue}}
       </mat-option>
     </mat-select>
+  </mat-form-field>
+  <mat-form-field class="gallery-header-item">
+    <mat-label>Filter by title</mat-label>
+    <input matInput [(ngModel)]="filterValue">
   </mat-form-field>
 </div>
 <div class="image-list-wrapper">

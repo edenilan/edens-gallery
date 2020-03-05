@@ -1,7 +1,12 @@
-.sort-dropdown-wrapper{
+.gallery-header{
   display: flex;
   justify-content: center;
 }
+
+.gallery-header-item{
+  margin: 6px;
+}
+
 .image-list-wrapper{
   height: 300px;
   display: flex;

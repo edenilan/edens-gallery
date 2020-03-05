@@ -70,6 +70,14 @@ export class MyGalleryComponent implements OnInit {
   public availableImages$: Observable<Image[]>;
   public currentVisibleImages$: Observable<Image[]>;
   public pageSizeOptions: number[] = PAGE_SIZE_OPTIONS;
+  private filterValueBS = new BehaviorSubject<string>("");
+  public readonly filterValue$: Observable<string> = this.filterValueBS.asObservable();
+  public set filterValue(value) {
+    this.filterValueBS.next(value);
+  }
+  public get filterValue() {
+    return this.filterValueBS.getValue();
+  }
   public sortingOptions: SortingOption[] = [
     {
       sortingKey: SortingKey.TITLE_ASC,
@@ -108,9 +116,11 @@ export class MyGalleryComponent implements OnInit {
   }
   private initObservables() {
     this.initialImages$ = this.fetchImages();
-    this.availableImages$ = combineLatest([this.initialImages$, this.deletedImages$]).pipe(
-      map(([initialImages, deletedImages]) =>
-        initialImages.filter(image => !deletedImages.some(deletedImage => deletedImage.url === image.url))
+    this.availableImages$ = combineLatest([this.initialImages$, this.deletedImages$, this.filterValue$]).pipe(
+      map(([initialImages, deletedImages, filterValue]) =>
+        initialImages
+          .filter(image => !deletedImages.some(deletedImage => deletedImage.url === image.url))
+          .filter(image => image.title.toLocaleLowerCase().includes(filterValue.toLocaleLowerCase()))
       )
     );
     this.paging$ = this.pagingSubject.asObservable().pipe(

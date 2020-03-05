@@ -5,6 +5,8 @@ import {CommonModule} from '@angular/common';
 import {BrowserModule} from '@angular/platform-browser';
 import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatSelectModule} from '@angular/material/select';
+import {MatInputModule} from '@angular/material/input';
+import {FormsModule} from '@angular/forms';
 
 @NgModule({
   imports: [
@@ -13,6 +15,8 @@ import {MatSelectModule} from '@angular/material/select';
     HttpClientModule,
     MatPaginatorModule,
     MatSelectModule,
+    MatInputModule,
+    FormsModule,
   ],
   exports: [MyGalleryComponent],
   declarations: [MyGalleryComponent],
