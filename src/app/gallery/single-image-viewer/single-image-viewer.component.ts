@@ -17,7 +17,7 @@ export interface SingleImageViewerData {
 })
 export class SingleImageViewerComponent {
   private readonly arrowClickSubject = new Subject<Direction>();
-  private readonly currentImageIndex$: Observable<number> = this.arrowClickSubject.pipe(
+  public readonly currentImageIndex$: Observable<number> = this.arrowClickSubject.pipe(
       scan((acc, curr) =>
         (curr === "left") ? acc - 1 : acc + 1, this.data.currentImageIndex
       ),
