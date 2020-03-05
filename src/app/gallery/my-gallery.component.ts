@@ -1,11 +1,12 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of, Subject} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
-import {map, scan, startWith} from 'rxjs/operators';
+import {map, scan, startWith, tap} from 'rxjs/operators';
 import {PageEvent} from '@angular/material/paginator';
 import {MatOptionSelectionChange} from '@angular/material/core/option/option';
 import {MatDialog} from "@angular/material/dialog";
 import {Image, PageSize} from "./my-gallery.types";
+import {SingleImageViewerComponent, SingleImageViewerData} from "./single-image-viewer/single-image-viewer.component";
 
 const PAGE_SIZE_OPTIONS: PageSize[] = [5, 10, 15, 20];
 
@@ -27,7 +28,7 @@ interface SortingOption {
   displayValue: string;
 }
 
-function sortImages(images: Image[], sortingOption: SortingKey): Image[]{
+function sortImages(images: Image[], sortingOption: SortingKey): Image[] {
   switch (sortingOption) {
     case SortingKey.NONE: {
       return images;
@@ -47,7 +48,7 @@ function sortImages(images: Image[], sortingOption: SortingKey): Image[]{
   }
 }
 
-function extractPageFromResults(pageIndex: number, pageSize: number, results: Image[]){
+function extractPageFromResults(pageIndex: number, pageSize: number, results: Image[]) {
   const start = (pageIndex) * pageSize;
   const end = start + pageSize;
   return results.slice(start, end);
@@ -105,12 +106,14 @@ export class MyGalleryComponent implements OnInit {
     startWith([])
   );
   private sortedImages$: Observable<Image[]>;
-  constructor(private httpClient: HttpClient) {
+  private readonly selectedImageSubject = new Subject<Image>();
+  private readonly selectedImage$: Observable<Image> = this.selectedImageSubject.asObservable();
+  constructor(private httpClient: HttpClient, private matDialog: MatDialog) {
   }
   ngOnInit(): void {
     this.initObservables();
   }
-  private initObservables() {
+  private initObservables(): void {
     this.initialImages$ = this.fetchImages();
     this.availableImages$ = combineLatest([this.initialImages$, this.deletedImages$, this.filterValue$]).pipe(
       map(([initialImages, deletedImages, filterValue]) =>
@@ -133,7 +136,23 @@ export class MyGalleryComponent implements OnInit {
         extractPageFromResults(paging.pageIndex, paging.pageSize, sortedImages)
       )
     );
+    combineLatest([this.selectedImage$, this.sortedImages$]).pipe(
+      tap(([selectedImage, sortedImages]) => {
+        this.matDialog.open<SingleImageViewerComponent, SingleImageViewerData>(
+          SingleImageViewerComponent,
+          {
+            width: "666px",
+            data: {
+              images: sortedImages,
+              currentImageIndex: sortedImages.findIndex((image: Image) => image.url === selectedImage.url)
+            }
+          });
+      })
+      // TODO: add takeUntil for tearing down subscription on destroy
+    ).subscribe();
+
   }
+
   private fetchImages(): Observable<Image[]> {
     if (typeof this.feed === "string") {
       return this.httpClient.get<Image[]>(this.feed);
@@ -141,7 +160,7 @@ export class MyGalleryComponent implements OnInit {
       return of(this.feed);
     }
   }
-  public onPageEvent(pageEvent: PageEvent){
+  public onPageEvent(pageEvent: PageEvent) {
     this.pagingSubject.next(pageEvent);
   }
   public onSortEvent(matOptionSelectionChange: MatOptionSelectionChange) {
@@ -152,5 +171,8 @@ export class MyGalleryComponent implements OnInit {
   }
   public imageDeleted(image: Image) {
     this.imageDeletedSubject.next(image);
+  }
+  public imageSelected(image: Image) {
+    this.selectedImageSubject.next(image);
   }
 }

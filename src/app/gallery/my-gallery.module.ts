@@ -7,6 +7,8 @@ import {MatPaginatorModule} from '@angular/material/paginator';
 import {MatSelectModule} from '@angular/material/select';
 import {MatInputModule} from '@angular/material/input';
 import {FormsModule} from '@angular/forms';
+import {MatDialogModule} from "@angular/material/dialog";
+import { SingleImageViewerComponent } from './single-image-viewer/single-image-viewer.component';
 
 @NgModule({
   imports: [
@@ -17,10 +19,12 @@ import {FormsModule} from '@angular/forms';
     MatSelectModule,
     MatInputModule,
     FormsModule,
+    MatDialogModule,
   ],
   exports: [MyGalleryComponent],
-  declarations: [MyGalleryComponent],
+  declarations: [MyGalleryComponent, SingleImageViewerComponent],
   providers: [],
+  entryComponents: [SingleImageViewerComponent]
 })
 export class MyGalleryModule {
 }

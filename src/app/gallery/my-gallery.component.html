@@ -15,13 +15,14 @@
     <input matInput [(ngModel)]="filterValue">
   </mat-form-field>
 </div>
+
 <div class="image-list-wrapper">
   <div class="image-list">
     <div *ngFor="let image of currentVisibleImages$ | async"
          class="gallery-image-container">
       <img class="delete-button" src="../../assets/cancel-24px.svg" (click)="imageDeleted(image)">
       <img [src]=image.url
-           [title]="image.title"
+           [title]="image.title" (click)="imageSelected(image)"
            onerror="this.onerror=null;this.src='../../assets/placeholder.png'">
 
     </div>
