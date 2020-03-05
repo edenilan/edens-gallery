@@ -1,7 +1,7 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnDestroy, OnInit} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of, Subject} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
-import {map, scan, startWith, tap, withLatestFrom} from 'rxjs/operators';
+import {map, scan, startWith, takeUntil, tap, withLatestFrom} from 'rxjs/operators';
 import {PageEvent} from '@angular/material/paginator';
 import {MatOptionSelectionChange} from '@angular/material/core/option/option';
 import {MatDialog} from "@angular/material/dialog";
@@ -59,7 +59,7 @@ function extractPageFromResults(pageIndex: number, pageSize: number, results: Im
   templateUrl: './my-gallery.component.html',
   styleUrls: ['./my-gallery.component.css']
 })
-export class MyGalleryComponent implements OnInit {
+export class MyGalleryComponent implements OnInit, OnDestroy {
   @Input() public readonly pagination: boolean = true;
   @Input() public readonly resultsPerPage: PageSize = 10;
   @Input() public sorting = true;
@@ -108,11 +108,17 @@ export class MyGalleryComponent implements OnInit {
   private sortedImages$: Observable<Image[]>;
   private readonly selectedImageSubject = new Subject<Image>();
   private readonly selectedImage$: Observable<Image> = this.selectedImageSubject.asObservable();
+  private readonly onDestroySubject = new Subject<true>();
+  private readonly onDestroy$: Observable<true> = this.onDestroySubject.asObservable();
   constructor(private httpClient: HttpClient, private matDialog: MatDialog) {
   }
   ngOnInit(): void {
     this.initObservables();
   }
+  ngOnDestroy(): void {
+    this.onDestroySubject.next(true);
+  }
+
   private initObservables(): void {
     this.initialImages$ = this.fetchImages();
     this.availableImages$ = combineLatest([this.initialImages$, this.deletedImages$, this.filterValue$]).pipe(
@@ -147,8 +153,8 @@ export class MyGalleryComponent implements OnInit {
               currentImageIndex: sortedImages.findIndex((image: Image) => image.url === selectedImage.url)
             }
           });
-      })
-      // TODO: add takeUntil for tearing down subscription on destroy
+      }),
+      takeUntil(this.onDestroy$)
     );
     openSingleImageViewerInModal$.subscribe();
 
