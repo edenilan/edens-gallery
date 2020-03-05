@@ -1,8 +1,13 @@
+.sort-dropdown-wrapper{
+  display: flex;
+  justify-content: center;
+}
 .image-list-wrapper{
   height: 300px;
   display: flex;
   justify-content: center;
-  align-items: center;}
+  align-items: center;
+}
 
 .image-list{
   display: flex;

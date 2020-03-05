@@ -1,3 +1,16 @@
+<div class="sort-dropdown-wrapper">
+  <mat-form-field class="sorting"
+                  *ngIf="sorting">
+    <mat-label>Sort by...</mat-label>
+    <mat-select>
+      <mat-option *ngFor="let sortingOption of sortingOptions"
+                  [value]="sortingOption.sortingKey"
+                  (onSelectionChange)="onSortEvent($event)">
+        {{sortingOption.displayValue}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
 <div class="image-list-wrapper">
   <div class="image-list">
     <div *ngFor="let image of currentVisibleImages$ | async"
@@ -19,15 +32,3 @@
                  (page)="onPageEvent($event)">
   </mat-paginator>
 </div>
-
-<mat-form-field class="sorting"
-                *ngIf="sorting">
-  <mat-label>Sort by...</mat-label>
-  <mat-select>
-    <mat-option *ngFor="let sortingOption of sortingOptions"
-                [value]="sortingOption.sortingKey"
-                (onSelectionChange)="onSortEvent($event)">
-      {{sortingOption.displayValue}}
-    </mat-option>
-  </mat-select>
-</mat-form-field>
