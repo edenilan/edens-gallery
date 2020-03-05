@@ -4,6 +4,7 @@ import {HttpClientModule} from '@angular/common/http';
 import {CommonModule} from '@angular/common';
 import {BrowserModule} from '@angular/platform-browser';
 import {MatPaginatorModule} from '@angular/material/paginator';
+import {MatSelectModule} from '@angular/material/select';
 
 @NgModule({
   imports: [
@@ -11,6 +12,7 @@ import {MatPaginatorModule} from '@angular/material/paginator';
     CommonModule,
     HttpClientModule,
     MatPaginatorModule,
+    MatSelectModule,
   ],
   exports: [MyGalleryComponent],
   declarations: [MyGalleryComponent],
