@@ -23,6 +23,7 @@
   position: relative;
   margin: 2px;
   height: 100%;
+  cursor: pointer;
 }
 .gallery-image-container img {
   max-height: 300px;
