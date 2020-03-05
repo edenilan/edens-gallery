@@ -4,13 +4,9 @@ import {HttpClient} from '@angular/common/http';
 import {map, scan, startWith} from 'rxjs/operators';
 import {PageEvent} from '@angular/material/paginator';
 import {MatOptionSelectionChange} from '@angular/material/core/option/option';
+import {MatDialog} from "@angular/material/dialog";
+import {Image, PageSize} from "./my-gallery.types";
 
-export interface Image {
-  title: string;
-  url: string;
-  date: string;
-}
-export type PageSize = 5 | 10 | 15 | 20;
 const PAGE_SIZE_OPTIONS: PageSize[] = [5, 10, 15, 20];
 
 interface Paging {
