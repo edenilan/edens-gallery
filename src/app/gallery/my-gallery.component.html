@@ -1,11 +1,19 @@
-<div *ngFor="let image of currentVisibleImages$ | async"
-     class="gallery-image-container">
-  <img [src]=image.url alt="" onerror="this.onerror=null;this.src='../../assets/placeholder.png'">
+<div class="image-list-wrapper">
+  <div class="image-list">
+    <div *ngFor="let image of currentVisibleImages$ | async"
+         class="gallery-image-container">
+      <img [src]=image.url alt="" onerror="this.onerror=null;this.src='../../assets/placeholder.png'">
+    </div>
+  </div>
 </div>
 
-<mat-paginator *ngIf="pagination"
-               [length]="(images$|async).length"
-               [pageSizeOptions]="pageSizeOptions"
-               [pageSize]="resultsPerPage"
-               (page)="onPageEvent($event)">
-</mat-paginator>
+
+<div class="paginator-wrapper">
+  <mat-paginator *ngIf="pagination"
+                 [length]="(images$|async).length"
+                 [pageSizeOptions]="pageSizeOptions"
+                 [pageSize]="resultsPerPage"
+                 (page)="onPageEvent($event)">
+  </mat-paginator>
+</div>
+

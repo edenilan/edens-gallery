@@ -1,14 +1,24 @@
-:host{
+.image-list-wrapper{
+  height: 300px;
+  display: flex;
+  justify-content: center;
+  align-items: center;}
+
+.image-list{
   display: flex;
   align-items: center;
 }
 
 .gallery-image-container{
-  flex: 1;
+  /*flex: 1;*/
   margin: 2px;
   height: 100%;
 }
 .gallery-image-container img {
-  height: 100%;
-  width: 100%;
+  max-height: 300px;
+  max-width: 100%;
+}
+.paginator-wrapper{
+  display: flex;
+  justify-content: center;
 }
