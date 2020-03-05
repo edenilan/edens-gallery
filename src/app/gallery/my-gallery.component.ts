@@ -89,12 +89,7 @@ export class MyGalleryComponent implements OnInit {
     },
   ];
   private readonly pagingSubject = new Subject<Paging>();
-  private readonly paging$: Observable<Paging> = this.pagingSubject.asObservable().pipe(
-    startWith({
-      pageIndex: 0,
-      pageSize: this.resultsPerPage,
-    })
-  );
+  private paging$: Observable<Paging>;
   private readonly selectedSortingOptionSubject = new Subject<SortingKey>();
   private readonly selectedSortingOption$: Observable<SortingKey> = this.selectedSortingOptionSubject.asObservable().pipe(
     startWith(SortingKey.NONE)
@@ -111,6 +106,12 @@ export class MyGalleryComponent implements OnInit {
     } else {
       this.images$ = of(this.feed);
     }
+    this.paging$ = this.pagingSubject.asObservable().pipe(
+      startWith({
+        pageIndex: 0,
+        pageSize: this.resultsPerPage,
+      })
+    );
     this.sortedImages$ = combineLatest([this.images$, this.selectedSortingOption$]).pipe(
       map(([images, selectedSortingOption]) => sortImages(images, selectedSortingOption))
     );
