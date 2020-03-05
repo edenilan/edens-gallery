@@ -95,8 +95,6 @@ export class MyGalleryComponent implements OnInit {
   private readonly selectedSortingOption$: Observable<SortingKey> = this.selectedSortingOptionSubject.asObservable().pipe(
     startWith(SortingKey.NONE)
   );
-  private readonly deletedImagesSubject = new BehaviorSubject<Image[]>([]);
-  // private readonly deletedImages$: Observable<Image[]> = this.deletedImagesSubject.asObservable();
   private readonly imageDeletedSubject = new Subject<Image>();
   private readonly deletedImages$: Observable<Image[]> = this.imageDeletedSubject.asObservable().pipe(
     scan((acc, curr) => [...acc, curr], []),
