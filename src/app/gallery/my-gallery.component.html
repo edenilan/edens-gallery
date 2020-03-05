@@ -2,16 +2,18 @@
   <div class="image-list">
     <div *ngFor="let image of currentVisibleImages$ | async"
          class="gallery-image-container">
+      <img class="delete-button" src="../../assets/cancel-24px.svg" (click)="imageDeleted(image)">
       <img [src]=image.url
            [title]="image.title"
            onerror="this.onerror=null;this.src='../../assets/placeholder.png'">
+
     </div>
   </div>
 </div>
 
 <div class="paginator-wrapper">
   <mat-paginator *ngIf="pagination"
-                 [length]="(images$|async)?.length"
+                 [length]="(availableImages$|async)?.length"
                  [pageSizeOptions]="pageSizeOptions"
                  [pageSize]="resultsPerPage"
                  (page)="onPageEvent($event)">

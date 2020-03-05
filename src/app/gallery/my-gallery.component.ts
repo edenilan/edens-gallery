@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
-import {combineLatest, Observable, of, Subject} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable, of, Subject} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
-import {map, startWith} from 'rxjs/operators';
+import {map, scan, startWith} from 'rxjs/operators';
 import {PageEvent} from '@angular/material/paginator';
 import {MatOptionSelectionChange} from '@angular/material/core/option/option';
 
@@ -67,7 +67,7 @@ export class MyGalleryComponent implements OnInit {
   @Input() public readonly resultsPerPage: PageSize = 10;
   @Input() public sorting = true;
   @Input() private readonly feed: string | Image[];
-  public images$: Observable<Image[]>;
+  public availableImages$: Observable<Image[]>;
   public currentVisibleImages$: Observable<Image[]>;
   public pageSizeOptions: number[] = PAGE_SIZE_OPTIONS;
   public sortingOptions: SortingOption[] = [
@@ -88,11 +88,19 @@ export class MyGalleryComponent implements OnInit {
       displayValue: "Oldest"
     },
   ];
+  private initialImages$: Observable<Image[]>;
   private readonly pagingSubject = new Subject<Paging>();
   private paging$: Observable<Paging>;
   private readonly selectedSortingOptionSubject = new Subject<SortingKey>();
   private readonly selectedSortingOption$: Observable<SortingKey> = this.selectedSortingOptionSubject.asObservable().pipe(
     startWith(SortingKey.NONE)
+  );
+  private readonly deletedImagesSubject = new BehaviorSubject<Image[]>([]);
+  // private readonly deletedImages$: Observable<Image[]> = this.deletedImagesSubject.asObservable();
+  private readonly imageDeletedSubject = new Subject<Image>();
+  private readonly deletedImages$: Observable<Image[]> = this.imageDeletedSubject.asObservable().pipe(
+    scan((acc, curr) => [...acc, curr], []),
+    startWith([])
   );
   private sortedImages$: Observable<Image[]>;
   constructor(private httpClient: HttpClient) {
@@ -101,18 +109,19 @@ export class MyGalleryComponent implements OnInit {
     this.initObservables();
   }
   private initObservables() {
-    if (typeof this.feed === "string") {
-      this.images$ = this.httpClient.get<Image[]>(this.feed);
-    } else {
-      this.images$ = of(this.feed);
-    }
+    this.initialImages$ = this.fetchImages();
+    this.availableImages$ = combineLatest([this.initialImages$, this.deletedImages$]).pipe(
+      map(([initialImages, deletedImages]) =>
+        initialImages.filter(image => !deletedImages.some(deletedImage => deletedImage.url === image.url))
+      )
+    );
     this.paging$ = this.pagingSubject.asObservable().pipe(
       startWith({
         pageIndex: 0,
         pageSize: this.resultsPerPage,
       })
     );
-    this.sortedImages$ = combineLatest([this.images$, this.selectedSortingOption$]).pipe(
+    this.sortedImages$ = combineLatest([this.availableImages$, this.selectedSortingOption$]).pipe(
       map(([images, selectedSortingOption]) => sortImages(images, selectedSortingOption))
     );
     this.currentVisibleImages$ = combineLatest([this.sortedImages$, this.paging$]).pipe(
@@ -120,6 +129,13 @@ export class MyGalleryComponent implements OnInit {
         extractPageFromResults(paging.pageIndex, paging.pageSize, sortedImages)
       )
     );
+  }
+  private fetchImages(): Observable<Image[]> {
+    if (typeof this.feed === "string") {
+      return this.httpClient.get<Image[]>(this.feed);
+    } else {
+      return of(this.feed);
+    }
   }
   public onPageEvent(pageEvent: PageEvent){
     this.pagingSubject.next(pageEvent);
@@ -129,5 +145,8 @@ export class MyGalleryComponent implements OnInit {
     if (option.selected) {
       this.selectedSortingOptionSubject.next(option.value);
     }
+  }
+  public imageDeleted(image: Image) {
+    this.imageDeletedSubject.next(image);
   }
 }

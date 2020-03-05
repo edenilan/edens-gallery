@@ -10,7 +10,7 @@
 }
 
 .gallery-image-container{
-  /*flex: 1;*/
+  position: relative;
   margin: 2px;
   height: 100%;
 }
@@ -22,3 +22,14 @@
   display: flex;
   justify-content: center;
 }
+.delete-button{
+  visibility: hidden;
+  position: absolute;
+  right: 6px;
+  top: 6px;
+}
+.gallery-image-container:hover .delete-button {
+  visibility: visible;
+  z-index: 2;
+}
+
