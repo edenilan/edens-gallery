@@ -11,7 +11,7 @@
 
 <div class="paginator-wrapper">
   <mat-paginator *ngIf="pagination"
-                 [length]="(images$|async).length"
+                 [length]="(images$|async)?.length"
                  [pageSizeOptions]="pageSizeOptions"
                  [pageSize]="resultsPerPage"
                  (page)="onPageEvent($event)">
