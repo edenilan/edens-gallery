@@ -1,3 +1,9 @@
-<img [src]=image?.url
-     [title]="image?.title"
+<img src="../../assets/chevron_left-24px.svg"
+     class="arrow" (click)="arrowClicked('left')">
+
+<img [src]=(image$|async)?.url
+     [title]="(image$|async)?.title"
      onerror="this.onerror=null;this.src='../../assets/placeholder.png'">
+
+<img  src="../../assets/chevron_right-24px.svg"
+      class="arrow" (click)="arrowClicked('right')">
