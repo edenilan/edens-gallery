@@ -1,7 +1,7 @@
 import {Component, Input, OnInit} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of, Subject} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
-import {map, scan, startWith, tap} from 'rxjs/operators';
+import {map, scan, startWith, tap, withLatestFrom} from 'rxjs/operators';
 import {PageEvent} from '@angular/material/paginator';
 import {MatOptionSelectionChange} from '@angular/material/core/option/option';
 import {MatDialog} from "@angular/material/dialog";
@@ -136,12 +136,12 @@ export class MyGalleryComponent implements OnInit {
         extractPageFromResults(paging.pageIndex, paging.pageSize, sortedImages)
       )
     );
-    combineLatest([this.selectedImage$, this.sortedImages$]).pipe(
+    const openSingleImageViewerInModal$: Observable<any> = this.selectedImage$.pipe(
+      withLatestFrom(this.sortedImages$),
       tap(([selectedImage, sortedImages]) => {
         this.matDialog.open<SingleImageViewerComponent, SingleImageViewerData>(
           SingleImageViewerComponent,
           {
-            width: "666px",
             data: {
               images: sortedImages,
               currentImageIndex: sortedImages.findIndex((image: Image) => image.url === selectedImage.url)
@@ -149,7 +149,8 @@ export class MyGalleryComponent implements OnInit {
           });
       })
       // TODO: add takeUntil for tearing down subscription on destroy
-    ).subscribe();
+    );
+    openSingleImageViewerInModal$.subscribe();
 
   }
 
