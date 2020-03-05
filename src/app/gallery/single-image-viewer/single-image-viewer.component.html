@@ -4,7 +4,7 @@
 
 <img [src]=(image$|async)?.url
      [title]="(image$|async)?.title"
-     onerror="this.onerror=null;this.src='../../assets/placeholder.png'">
+     onerror="this.src='../../assets/placeholder.png'">
 
 <img *ngIf="(currentImageIndex$|async) < this.data.images.length - 1"
       src="../../assets/chevron_right-24px.svg"
