@@ -27,6 +27,9 @@
 
     </div>
   </div>
+  <h3 class=".mat-typography" *ngIf="(currentVisibleImages$ | async)?.length === 0">
+    No images found.. let's try some other search words
+  </h3>
 </div>
 
 <div class="paginator-wrapper">
