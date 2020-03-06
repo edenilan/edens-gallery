@@ -10,7 +10,7 @@
       </mat-option>
     </mat-select>
   </mat-form-field>
-  <mat-form-field class="gallery-header-item">
+  <mat-form-field class="gallery-header-item" *ngIf="search">
     <mat-label>Filter by title</mat-label>
     <input matInput [(ngModel)]="filterValue">
   </mat-form-field>

@@ -65,6 +65,7 @@ function isCurrentPageEmpty(paging: Paging, availableImages: Image[]): boolean {
 })
 export class MyGalleryComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() public readonly pagination: boolean = true;
+  @Input() public readonly search: boolean = true;
   @Input() public readonly resultsPerPage: PageSize = 10;
   @Input() public sorting = true;
   @Input() private readonly feed: string | Image[];
