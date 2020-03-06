@@ -1,8 +1,8 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
+import {AfterViewInit, Component, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of, Subject} from 'rxjs';
 import {HttpClient} from '@angular/common/http';
-import {map, scan, startWith, takeUntil, tap, withLatestFrom} from 'rxjs/operators';
-import {PageEvent} from '@angular/material/paginator';
+import {filter, map, scan, startWith, takeUntil, tap, withLatestFrom} from 'rxjs/operators';
+import {MatPaginator, PageEvent} from '@angular/material/paginator';
 import {MatOptionSelectionChange} from '@angular/material/core/option/option';
 import {MatDialog} from "@angular/material/dialog";
 import {Image, PageSize} from "./my-gallery.types";
@@ -54,16 +54,21 @@ function extractPageFromResults(pageIndex: number, pageSize: number, results: Im
   return results.slice(start, end);
 }
 
+function isCurrentPageEmpty(paging: Paging, availableImages: Image[]): boolean {
+  const {pageIndex, pageSize} = paging;
+  return availableImages.length <= pageIndex * pageSize;
+}
 @Component({
   selector: 'my-gallery',
   templateUrl: './my-gallery.component.html',
   styleUrls: ['./my-gallery.component.css']
 })
-export class MyGalleryComponent implements OnInit, OnDestroy {
+export class MyGalleryComponent implements OnInit, OnDestroy, AfterViewInit {
   @Input() public readonly pagination: boolean = true;
   @Input() public readonly resultsPerPage: PageSize = 10;
   @Input() public sorting = true;
   @Input() private readonly feed: string | Image[];
+  @ViewChild(MatPaginator) private readonly matPaginator;
   public availableImages$: Observable<Image[]>;
   public currentVisibleImages$: Observable<Image[]>;
   public pageSizeOptions: number[] = PAGE_SIZE_OPTIONS;
@@ -118,7 +123,17 @@ export class MyGalleryComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.onDestroySubject.next(true);
   }
-
+  ngAfterViewInit(): void {
+    const goToPreviousPageIfCurrentIsEmpty$ = combineLatest([this.paging$, this.availableImages$]).pipe(
+      filter(([paging, availableImages]) => isCurrentPageEmpty(paging, availableImages)),
+      filter(([paging, ]) => paging.pageIndex > 0),
+      tap(() => {
+        this.matPaginator.previousPage();
+      }),
+      takeUntil(this.onDestroy$)
+    );
+    goToPreviousPageIfCurrentIsEmpty$.subscribe();
+  }
   private initObservables(): void {
     this.initialImages$ = this.fetchImages();
     this.availableImages$ = combineLatest([this.initialImages$, this.deletedImages$, this.filterValue$]).pipe(
