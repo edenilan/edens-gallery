@@ -28,6 +28,25 @@ interface SortingOption {
   displayValue: string;
 }
 
+const SORTING_OPTIONS: SortingOption[] = [
+  {
+    sortingKey: SortingKey.TITLE_ASC,
+    displayValue: "Title (A-Z)"
+  },
+  {
+    sortingKey: SortingKey.TITLE_DESC,
+    displayValue: "Title (Z-A)"
+  },
+  {
+    sortingKey: SortingKey.DATE_DESC,
+    displayValue: "Newest"
+  },
+  {
+    sortingKey: SortingKey.DATE_ASC,
+    displayValue: "Oldest"
+  },
+];
+
 function sortImages(images: Image[], sortingOption: SortingKey): Image[] {
   switch (sortingOption) {
     case SortingKey.NONE: {
@@ -48,7 +67,7 @@ function sortImages(images: Image[], sortingOption: SortingKey): Image[] {
   }
 }
 
-function extractPageFromResults(pageIndex: number, pageSize: number, results: Image[]) {
+function extractPageFromResults(pageIndex: number, pageSize: number, results: Image[]): Image[] {
   const start = (pageIndex) * pageSize;
   const end = start + pageSize;
   return results.slice(start, end);
@@ -73,6 +92,7 @@ export class MyGalleryComponent implements OnInit, OnDestroy, AfterViewInit {
   public availableImages$: Observable<Image[]>;
   public currentVisibleImages$: Observable<Image[]>;
   public pageSizeOptions: number[] = PAGE_SIZE_OPTIONS;
+  public sortingOptions: SortingOption[] = SORTING_OPTIONS;
   private filterValueBS = new BehaviorSubject<string>("");
   public readonly filterValue$: Observable<string> = this.filterValueBS.asObservable();
   public set filterValue(value) {
@@ -81,24 +101,6 @@ export class MyGalleryComponent implements OnInit, OnDestroy, AfterViewInit {
   public get filterValue() {
     return this.filterValueBS.getValue();
   }
-  public sortingOptions: SortingOption[] = [
-    {
-      sortingKey: SortingKey.TITLE_ASC,
-      displayValue: "Title (A-Z)"
-    },
-    {
-      sortingKey: SortingKey.TITLE_DESC,
-      displayValue: "Title (Z-A)"
-    },
-    {
-      sortingKey: SortingKey.DATE_DESC,
-      displayValue: "Newest"
-    },
-    {
-      sortingKey: SortingKey.DATE_ASC,
-      displayValue: "Oldest"
-    },
-  ];
   private initialImages$: Observable<Image[]>;
   private readonly pagingSubject = new Subject<Paging>();
   private paging$: Observable<Paging>;
@@ -173,7 +175,6 @@ export class MyGalleryComponent implements OnInit, OnDestroy, AfterViewInit {
       takeUntil(this.onDestroy$)
     );
     openSingleImageViewerInModal$.subscribe();
-
   }
 
   private fetchImages(): Observable<Image[]> {
